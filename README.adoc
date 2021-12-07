@@ -3,16 +3,16 @@
 This demo gives a brief overview about common use cases of kafka streams applications.
 
 * demo expects local kafka running (localhost:9092)
-** you can use startKafka.sh and startZoo.sh in scripts folder
+** you can use `startKafka.sh` and `startZoo.sh` in scripts folder
 
 == steps
 
 . open project in an IDE
 . open a terminal and go to the scripts folder of this repository
-. run ./startZoo.sh for starting zookeeper
-. run ./startKafka.sh for starting kafka
-. run ./createDemoTopics.sh to create all needed topics
-. run ./listTopics.sh
+. run `./startZoo.sh` for starting zookeeper
+. run `./startKafka.sh` for starting kafka
+. run `./createDemoTopics.sh` to create all needed topics
+. run `./listTopics.sh`
 ** you should see something like this:
 costs +
 normalized-logs +
