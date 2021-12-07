@@ -1,0 +1,33 @@
+plugins {
+    id 'idea'
+    id 'groovy'
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+version = '0.1'
+
+dependencies {
+    implementation "org.apache.kafka:kafka-streams:2.8.0"
+    implementation "org.codehaus.groovy:groovy:3.0.8"
+    implementation 'com.github.javafaker:javafaker:1.0.2'
+
+    implementation 'ch.qos.logback:logback-core:1.2.6'
+    runtime 'ch.qos.logback:logback-classic:1.2.6'
+    implementation 'org.slf4j:slf4j-api:1.7.30'
+
+    testImplementation platform("org.spockframework:spock-bom:2.0-groovy-3.0")
+    testImplementation "org.spockframework:spock-core"
+    testRuntimeOnly "net.bytebuddy:byte-buddy:1.11.0"
+    testRuntimeOnly "org.objenesis:objenesis:3.2"
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
