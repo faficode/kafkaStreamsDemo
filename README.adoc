@@ -1,0 +1,29 @@
+= kafkaStreamsDemo
+
+This demo gives a brief overview about common use cases of kafka streams applications.
+
+* demo expects local kafka running (localhost:9092)
+** you can use startKafka.sh and startZoo.sh in scripts folder
+
+== steps
+
+. open project in an IDE
+. open a terminal and go to the scripts folder of this repository
+. run ./startZoo.sh for starting zookeeper
+. run ./startKafka.sh for starting kafka
+. run ./createDemoTopics.sh to create all needed topics
+. run ./listTopics.sh
+** you should see something like this:
+costs +
+normalized-logs +
+raw-logs +
+task-duration +
+. run main method of class LogGenerator
+** run `./consumeTopic.sh raw-logs raw-logs` to listen to raw-logs, you should see log lines coming in
+. run main method of class CostProducer
+. run main method of class LogStream
+** now you can check how the messages are transformed
+** `./consumeTopic.sh normalized-logs` shows the normalized messages in json format
+** `./consumeLong.sh count-tasks` shows the task count per language within a 5min time window
+** `./consumeTopic.sh task-duration` shows the duration of each task
+** `./consumeLong.sh task-costs` shows the costs for each task (this is done using a join)

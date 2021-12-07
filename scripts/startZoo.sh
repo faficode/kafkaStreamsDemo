@@ -4,6 +4,4 @@ docker run -d \
   -e ZOOKEEPER_CLIENT_PORT=2181 \
   -e ZOOKEEPER_TICK_TIME=2000 \
   -e ZOOKEEPER_SYNC_LIMIT=2 \
-  -v /tmp/zoo-data/data:/var/lib/zookeeper/data \
-  -v /tmp/zoo-data/txn-logs:/var/lib/zookeeper/log \
   confluentinc/cp-zookeeper:7.0.0

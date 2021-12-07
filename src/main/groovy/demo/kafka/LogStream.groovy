@@ -2,12 +2,14 @@ package demo.kafka
 
 import org.apache.kafka.common.serialization.Serde
 import org.apache.kafka.common.serialization.Serdes
+import org.apache.kafka.streams.KeyValue
 import org.apache.kafka.streams.StreamsBuilder
 import org.apache.kafka.streams.Topology
 import org.apache.kafka.streams.kstream.*
 
-import static demo.kafka.Helpers.createAdminClient
-import static demo.kafka.Helpers.createStream
+import java.time.Duration
+
+import static demo.kafka.Helpers.*
 
 class LogStream {
     static Serde<Log> LOG_SERDE = Serdes.serdeFrom(new JsonSerializer(), new JsonDeserializer<>(Log))
@@ -15,24 +17,31 @@ class LogStream {
 
     static void main(String[] args) {
 //        listTopics('localhost:9092')
-        createStream('localhost:9092', 'copyStream', copyStream()).start()
-//        createStream('localhost:9092', 'normalizeStream', normalizeStream()).start()
-//        createStream('localhost:9092', 'countTasksStream', countStream()).start()
-//        createStream('localhost:9092', 'durationTasksStream', computeDuration()).start()
-//        createStream('localhost:9092', 'costsStream', computeCostsStream()).start()
+//        createStream('localhost:9092', 'copyStream', copyStream()).start()
+        createStream('localhost:9092', 'normalizeStream', normalizeStream()).start()
+        createStream('localhost:9092', 'countTasksStream', countStream()).start()
+        createStream('localhost:9092', 'durationTasksStream', computeDuration()).start()
+        createStream('localhost:9092', 'costsStream', computeCostsStream()).start()
     }
 
     static Topology copyStream() {
         def builder = new StreamsBuilder()
+        builder.stream('raw-logs')
+                .to('copy-logs')
 
         return builder.build()
     }
 
     static Topology normalizeStream() {
         def builder = new StreamsBuilder()
+
         builder.stream('raw-logs')
-                .to('normalized-logs-raw', Produced.with(Serdes.String(), Serdes.String()))
-//                .to('normalized-logs', Produced.with(Serdes.String(), LOG_SERDE))
+                .mapValues({ String line ->
+                    def parts = line.split('\\|')
+
+                    return new Log(timestamp: parseDate(parts[0]), language: parts[1].trim(), taskId: parts[2], message: parts[3])
+                } as ValueMapper)
+                .to('normalized-logs', Produced.with(Serdes.String(), LOG_SERDE))
 
         return builder.build()
     }
@@ -41,11 +50,13 @@ class LogStream {
         def builder = new StreamsBuilder()
 
         builder.stream('normalized-logs', Consumed.with(Serdes.String(), LOG_SERDE))
-                .filter({ key, value -> value.message == 'start' })
+                .filter({ key, log -> log.message == 'start' })
                 .selectKey({ key, value -> value.language })
                 .groupByKey()
+                .windowedBy(TimeWindows.of(Duration.ofSeconds(5)).grace(Duration.ofSeconds(1)))
                 .count()
                 .toStream()
+                .map({ key, value -> new KeyValue<>(key.key(), value) })
                 .to('count-tasks', Produced.with(Serdes.String(), Serdes.Long()))
 
         return builder.build()
