@@ -24,6 +24,6 @@ task-duration +
 . run main method of class LogStream
 ** now you can check how the messages are transformed
 ** `./consumeTopic.sh normalized-logs` shows the normalized messages in json format
-** `./consumeLong.sh count-tasks` shows the task count per language within a 5min time window
+** `./consumeLong.sh count-tasks` shows the task count per language within a 5sec time window
 ** `./consumeTopic.sh task-duration` shows the duration of each task
 ** `./consumeLong.sh task-costs` shows the costs for each task (this is done using a join)
